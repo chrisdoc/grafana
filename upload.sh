@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -uxo pipefail
 
 # Load environment variables from .env if not in CI
 if [ -z "${CI:-}" ] && [ -f .env ]; then
@@ -73,9 +73,9 @@ total=0
 # Upload each dashboard
 for dashboard in dist/*.json; do
   if [ -f "$dashboard" ]; then
-    ((total++))
+    total=$((total + 1))
     if ! upload_dashboard "$dashboard"; then
-      ((failed++))
+      failed=$((failed + 1))
     fi
   fi
 done
