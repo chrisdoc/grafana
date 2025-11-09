@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
 # Load environment variables from .env if not in CI
 if [ -z "${CI:-}" ] && [ -f .env ]; then
@@ -55,6 +55,16 @@ upload_dashboard() {
 }
 
 echo "Uploading dashboards to Grafana at ${GRAFANA_URL}..."
+echo ""
+
+# Check if dist directory exists
+if [ ! -d "dist" ]; then
+  echo "Error: dist/ directory not found"
+  exit 1
+fi
+
+echo "Found dist/ directory, listing files:"
+ls -la dist/
 echo ""
 
 failed=0
