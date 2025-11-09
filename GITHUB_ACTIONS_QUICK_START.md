@@ -33,7 +33,7 @@ Add these 4 secrets:
 - `TAILSCALE_OAUTH_CLIENT_ID` = your Tailscale Client ID
 - `TAILSCALE_OAUTH_SECRET` = your Tailscale Client Secret
 - `GRAFANA_URL` = `http://192.168.86.104:3000`
-- `GRAFANA_API_TOKEN` = your Grafana API token
+- `GRAFANA_TOKEN` = your Grafana API token
 
 ## Done!
 

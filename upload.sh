@@ -7,13 +7,9 @@ if [ -z "${CI:-}" ] && [ -f .env ]; then
 fi
 
 # Check required variables
-if [ -z "${GRAFANA_URL:-}" ] || [ -z "${GRAFANA_API_TOKEN:-}" ]; then
-  # Try alternate token variable name for backward compatibility
-  if [ -z "${GRAFANA_TOKEN:-}" ]; then
-    echo "Error: GRAFANA_URL and either GRAFANA_API_TOKEN or GRAFANA_TOKEN must be set"
-    exit 1
-  fi
-  GRAFANA_API_TOKEN="${GRAFANA_TOKEN}"
+if [ -z "${GRAFANA_URL:-}" ] || [ -z "${GRAFANA_TOKEN:-}" ]; then
+  echo "Error: GRAFANA_URL and GRAFANA_TOKEN must be set"
+  exit 1
 fi
 
 # Remove trailing slash from GRAFANA_URL if present
@@ -35,7 +31,7 @@ upload_dashboard() {
   echo "Uploading $name..."
   
   response=$(curl -s -w "\n%{http_code}" -X POST "${GRAFANA_URL}/api/dashboards/db" \
-    -H "Authorization: Bearer ${GRAFANA_API_TOKEN}" \
+    -H "Authorization: Bearer ${GRAFANA_TOKEN}" \
     -H "Content-Type: application/json" \
     -d @"$file" 2>&1)
   

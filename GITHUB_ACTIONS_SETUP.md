@@ -36,7 +36,7 @@ Add the following secrets to your GitHub repository:
 3. **`GRAFANA_URL`**
    - Value: Your Grafana URL (e.g., `http://192.168.86.104:3000`)
 
-4. **`GRAFANA_API_TOKEN`**
+4. **`GRAFANA_TOKEN`**
    - Value: Your Grafana API token (starts with `glc_` or similar)
 
 ### How to add secrets:
