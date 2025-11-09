@@ -55,7 +55,7 @@ jobs:
       - name: Verify deployment
         run: |
           echo "Dashboards deployed successfully"
-          echo "Air Quality: ${{ secrets.GRAFANA_URL }}/d/air-quality-i_9psl"
-          echo "Energy Monitor: ${{ secrets.GRAFANA_URL }}/d/energy-monitor"
-          echo "Thermostat: ${{ secrets.GRAFANA_URL }}/d/thermostats-overview"
-          echo "Location Tracking: ${{ secrets.GRAFANA_URL }}/d/location-tracking"
+          echo "Air Quality: http://192.168.86.104:3000/d/air-quality-i_9psl"
+          echo "Energy Monitor: http://192.168.86.104:3000/d/energy-monitor"
+          echo "Thermostat: http://192.168.86.104:3000/d/thermostats-overview"
+          echo "Location Tracking: http://192.168.86.104:3000/d/location-tracking"
