@@ -58,7 +58,7 @@ export function makeThermostatDashboard() {
     .datasource(victoriaMetricsDS)
     .legendFormat("Temperature");
 
-  // Panel with query
+  // Panel with query make sure that null values are connected
   const panel = new TimeseriesPanelBuilder()
     .title("Temperature")
     .datasource(victoriaMetricsDS)

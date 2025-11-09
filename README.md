@@ -487,6 +487,7 @@ curl -X POST http://localhost:3000/api/dashboards/db \
 - **Panel Types**: Always alias `PanelBuilder` to specify type (e.g., `TimeseriesPanelBuilder`)
 - **UIDs**: Use unique, kebab-case identifiers
 - **Units**: Grafana standard units (celsius, percent, ppm, kwatth, watt, none)
+- **Panel Patterns**: Follow the two-panel metric layout (timeseries + stat) - see `src/shared/PANEL_PATTERNS.md`
 
 ### Testing & Validation
 
