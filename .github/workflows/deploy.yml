@@ -41,7 +41,7 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
-          tags: tag:github-actions
+          tags: tag:ci
 
       - name: Deploy to Grafana
         run: ./upload.sh
