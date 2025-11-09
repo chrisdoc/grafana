@@ -53,6 +53,7 @@ export function createMetricPanels(config: PanelConfig) {
     .unit(unit)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never");
 
   // Add targets
@@ -75,6 +76,9 @@ export function createMetricPanels(config: PanelConfig) {
       { id: "color", value: { mode: "fixed", fixedColor: "#555555" } },
     ]);
   }
+
+  // Ensure spanNulls is set in fieldConfig
+  timeseriesPanel.spanNulls(600000);
 
   panels.push(timeseriesPanel);
 

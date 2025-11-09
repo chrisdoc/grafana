@@ -40,6 +40,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -87,6 +88,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -134,6 +136,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -181,6 +184,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -232,6 +236,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -279,6 +284,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -326,6 +332,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -373,6 +380,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -424,6 +432,7 @@ export function makeAirQualityDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -474,6 +483,7 @@ export function makeAirQualityDashboard() {
     .unit("celsius")
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -522,6 +532,7 @@ export function makeAirQualityDashboard() {
     .max(100)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },

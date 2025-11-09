@@ -33,6 +33,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .unit("celsius")
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never" as const);
 
   dashboard.withPanel(currentTempPanel);
@@ -85,6 +86,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .max(100)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never" as const);
 
   dashboard.withPanel(humidityPanel);

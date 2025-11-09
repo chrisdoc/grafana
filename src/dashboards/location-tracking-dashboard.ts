@@ -205,6 +205,7 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 0, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
+    .spanNulls(600000)
     .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(christophHistoryPanel);
@@ -223,6 +224,7 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 12, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
+    .spanNulls(600000)
     .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(megHistoryPanel);

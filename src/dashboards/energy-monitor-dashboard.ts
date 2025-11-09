@@ -40,6 +40,7 @@ export function makeEnergyMonitorDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -87,6 +88,7 @@ export function makeEnergyMonitorDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -134,6 +136,7 @@ export function makeEnergyMonitorDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -181,6 +184,7 @@ export function makeEnergyMonitorDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -224,10 +228,11 @@ export function makeEnergyMonitorDashboard() {
     .withTarget(currentCurrent)
     .withTarget(currentPrev)
     .gridPos({ x: 0, y: 33, w: 18, h: 8 })
-    .unit("amp")
+    .unit("ampere")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -274,11 +279,12 @@ export function makeEnergyMonitorDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(energyImportCurrent)
     .withTarget(energyImportPrev)
-    .gridPos({ x: 0, y: 42, w: 18, h: 8 })
+    .gridPos({ x: 0, y: 41, w: 18, h: 8 })
     .unit("kwatth")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -321,11 +327,12 @@ export function makeEnergyMonitorDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(tariff1Current)
     .withTarget(tariff1Prev)
-    .gridPos({ x: 0, y: 50, w: 18, h: 8 })
+    .gridPos({ x: 0, y: 49, w: 18, h: 8 })
     .unit("kwatth")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -368,11 +375,12 @@ export function makeEnergyMonitorDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(tariff2Current)
     .withTarget(tariff2Prev)
-    .gridPos({ x: 0, y: 58, w: 18, h: 8 })
+    .gridPos({ x: 0, y: 57, w: 18, h: 8 })
     .unit("kwatth")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -440,6 +448,7 @@ export function makeEnergyMonitorDashboard() {
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -486,11 +495,12 @@ export function makeEnergyMonitorDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(energyCostCurrent)
     .withTarget(energyCostPrev)
-    .gridPos({ x: 0, y: 84, w: 18, h: 8 })
-    .unit("currencyEUR")
+    .gridPos({ x: 0, y: 83, w: 18, h: 8 })
+    .unit("euro")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
@@ -533,11 +543,12 @@ export function makeEnergyMonitorDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(gasCostCurrent)
     .withTarget(gasCostPrev)
-    .gridPos({ x: 0, y: 92, w: 18, h: 8 })
-    .unit("currencyEUR")
+    .gridPos({ x: 0, y: 91, w: 18, h: 8 })
+    .unit("euro")
     .min(0)
     .lineWidth(2)
     .fillOpacity(10)
+    .spanNulls(600000)
     .showPoints("never")
     .overrideByName("Previous 24h", [
       { id: "custom.lineStyle", value: { dash: [10, 10], fill: "dash" } },
