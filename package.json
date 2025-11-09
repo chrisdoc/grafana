@@ -1,0 +1,35 @@
+{
+  "name": "grafana-foundation-dashboards",
+  "version": "0.1.0",
+  "description": "Grafana dashboards built with TypeScript and Foundation SDK",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "build": "tsx build.ts",
+    "generate": "npm run build",
+    "upload": "./upload.sh",
+    "deploy": "npm run build && npm run upload",
+    "clean": "rm -rf dist output build",
+    "fmt": "biome format --write .",
+    "lint": "biome lint --write ."
+  },
+  "keywords": [
+    "grafana",
+    "dashboard",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grafana/grafana-foundation-sdk": "11.6.0-cogv0.0.x.1753977659"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.4",
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,58 @@
+name: Build and Deploy Dashboards
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format check
+        run: npm run fmt -- --check
+
+      - name: Lint check
+        run: npm run lint -- --check
+
+      - name: Build dashboards
+        run: npm run build
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
+          tags: tag:github-actions
+
+      - name: Deploy to Grafana
+        run: ./upload.sh
+        env:
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_API_TOKEN: ${{ secrets.GRAFANA_API_TOKEN }}
+
+      - name: Verify deployment
+        run: |
+          echo "Dashboards deployed successfully"
+          echo "Air Quality: ${{ secrets.GRAFANA_URL }}/d/air-quality-i_9psl"
+          echo "Energy Monitor: ${{ secrets.GRAFANA_URL }}/d/energy-monitor"
+          echo "Thermostat: ${{ secrets.GRAFANA_URL }}/d/thermostats-overview"
+          echo "Location Tracking: ${{ secrets.GRAFANA_URL }}/d/location-tracking"
