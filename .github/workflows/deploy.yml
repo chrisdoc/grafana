@@ -58,12 +58,14 @@ jobs:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
           tags: tag:ci
+        continue-on-error: true
 
       - name: Deploy to Grafana
         run: ./upload.sh
         env:
           GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
           GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+        if: ${{ success() }}
 
       - name: Verify deployment
         run: |
@@ -72,3 +74,4 @@ jobs:
           echo "Energy Monitor: http://192.168.86.104:3000/d/energy-monitor"
           echo "Thermostat: http://192.168.86.104:3000/d/thermostats-overview"
           echo "Location Tracking: http://192.168.86.104:3000/d/location-tracking"
+        if: ${{ success() }}
