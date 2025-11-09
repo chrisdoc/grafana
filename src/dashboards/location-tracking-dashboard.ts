@@ -5,6 +5,7 @@ import { PanelBuilder as GeoMapPanelBuilder } from "@grafana/grafana-foundation-
 import { RowBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
 import { victoriaMetricsDS } from "../shared/datasource.js";
+import { VisibilityMode } from "@grafana/grafana-foundation-sdk/common";
 
 export function makeLocationTrackingDashboard() {
   const dashboard = new DashboardBuilder("Location Tracking")
@@ -204,7 +205,7 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 0, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
-    .showPoints("never" as const);
+    .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(christophHistoryPanel);
 
@@ -222,7 +223,7 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 12, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
-    .showPoints("never" as const);
+    .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(megHistoryPanel);
 
