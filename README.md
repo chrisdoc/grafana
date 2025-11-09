@@ -1,52 +1,99 @@
-<<<<<<< HEAD
-# grafana
-Grafana dashboards built with TypeScript and Foundation SDK, auto-deployed via GitHub Actions and Tailscale
-=======
 # Grafana Dashboards - TypeScript via Foundation SDK
 
-This project recreates existing Grafana dashboards in TypeScript using the `@grafana/grafana-foundation-sdk` and compiles them to JSON for import into Grafana.
+**Production-ready Grafana dashboards** built with TypeScript and auto-deployed via GitHub Actions + Tailscale.
+
+This project generates Grafana dashboards programmatically using `@grafana/grafana-foundation-sdk`, compiles them to JSON, validates them with Biome, and auto-deploys to Grafana via secure Tailscale networking.
 
 ## Prerequisites
 
-- **Node.js**: 18+ (you have v24.11.0 ✓)
+- **Node.js**: 20+ (for GitHub Actions compatibility)
+- **pnpm**: 10+ (package manager)
 - **Grafana**: With a VictoriaMetrics (Prometheus) datasource
-  - Type: `prometheus`
   - UID: `df3igl5nh1f5sa`
+- **Optional**: `.env` file for local deployment (GRAFANA_URL, GRAFANA_TOKEN)
 
 ## Project Structure
 
 ```
 grafana/
 ├── src/
-│   ├── dashboards/          # Dashboard implementations
-│   └── shared/              # Shared utilities and constants
-│       └── datasource.ts    # VictoriaMetrics datasource config
-├── build.ts                 # Build script (generates JSON)
-├── dist/                    # Generated dashboard JSON files
+│   ├── dashboards/              # Dashboard implementations (4 dashboards, 90 panels)
+│   │   ├── air-quality-dashboard.ts
+│   │   ├── energy-monitor-dashboard.ts
+│   │   ├── thermostat-dashboard.ts
+│   │   └── location-tracking-dashboard.ts
+│   └── shared/
+│       └── datasource.ts        # VictoriaMetrics datasource config (UID: df3igl5nh1f5sa)
+├── .github/
+│   ├── workflows/
+│   │   └── deploy.yml           # CI/CD pipeline (build → lint → Tailscale → deploy)
+│   ├── dependabot.yml           # Automatic dependency updates (npm, GitHub Actions)
+│   └── copilot-instructions.md  # AI agent coding guidelines
+├── build.ts                     # Build orchestrator (compiles TS → JSON)
+├── dist/                        # Generated dashboard JSON files (4 files, 90 panels)
+├── upload.sh                    # Grafana API deployment script
+├── biome.json                   # Code formatter & linter (100-char line width)
+├── pnpm-lock.yaml              # Lock file for pnpm v10
+├── AGENTS.md                    # Datasource & metric reference (2,708 metrics)
+├── MAINTENANCE.md               # Guide for keeping documentation updated
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-## Installation
+## Installation & Quick Start
 
 ```bash
-npm install
+# Install dependencies with pnpm
+pnpm install
+
+# Format code (Biome)
+pnpm fmt
+
+# Lint code (Biome)
+pnpm lint
+
+# Build dashboards (TypeScript → JSON)
+pnpm build
+
+# Local deployment (requires .env)
+pnpm deploy
+
+# GitHub Actions deployment (automatic on push to main)
+# - Builds, lints, validates
+# - Connects via Tailscale
+# - Uploads to Grafana
 ```
 
-## Build
+## Architecture
 
-Generate dashboard JSON files:
-
-```bash
-npm run build
+```
+VictoriaMetrics Datasource (2,708 Home Assistant metrics)
+    ↓
+TypeScript Dashboard Builders (src/dashboards/*.ts)
+    ↓
+build.ts Compiler → dist/*.json
+    ↓
+GitHub Actions CI/CD
+    ↓
+Tailscale VPN → Grafana API Upload
 ```
 
-This outputs JSON files to `dist/`:
-- `dist/air-quality-dashboard.json`
-- `dist/energy-monitor-dashboard.json`
+**Key Components**:
+- **Datasource**: VictoriaMetrics (UID: `df3igl5nh1f5sa`) via Prometheus queries
+- **Build Process**: `build.ts` compiles TypeScript to JSON with automatic null-value bridging
+- **Deployment**: `upload.sh` + GitHub Actions with Tailscale secure networking
 
-## Dashboards to Recreate
+## Dashboards (4 Complete, 90 Panels)
+
+| Dashboard | Panels | Metrics | Status |
+|-----------|--------|---------|--------|
+| Air Quality | 26 | Pollutants, AQI, climate | ✅ Complete |
+| Energy Monitor | 36 | Real-time power, tariffs, gas, costs | ✅ Complete |
+| Thermostat Overview | 14 | Zone temperatures, humidity, schedules | ✅ Complete |
+| Location Tracking | 14 | Device locations, battery, connectivity | ✅ Complete |
+
+**Totals**: 90 panels across 10 rows, 2,708 Home Assistant metrics
 
 ### 1. Air Quality Dashboard (26 panels across 4 rows)
 - **Particulate Matter**: PM0.3, PM1, PM2.5, PM10 (timeseries + stat panels)
@@ -345,20 +392,142 @@ curl -X POST http://localhost:3000/api/dashboards/db \
 - **Datasource**: All queries use the VictoriaMetrics datasource (uid: `df3igl5nh1f5sa`)
 - **Schema version**: Generated dashboards use the latest Grafana schema
 
+## Features
+
+✨ **Automated Dashboard Generation**
+- TypeScript-first development with full IDE support
+- Type-safe Grafana Foundation SDK
+- Automatic null-value bridging across 10-minute gaps
+- Consistent formatting and linting (Biome)
+
+🔐 **Secure Deployment**
+- GitHub Actions CI/CD pipeline
+- Tailscale VPN for private network connectivity
+- OAuth-based authentication
+- Secret management for API tokens and credentials
+
+📊 **Rich Visualizations**
+- 90+ panels across 4 dashboards
+- Time-series, stats, gauges, and bar charts
+- 24-hour previous-day overlays for trend comparison
+- Auto-scaling grid layout
+
+🔌 **Full Home Assistant Integration**
+- 2,708 metrics from Home Assistant via VictoriaMetrics
+- All domains supported: sensor, climate, light, device_tracker, binary_sensor, weather, switch
+- PromQL queries with Home Assistant entity naming conventions
+- Real-time metrics with 30-second refresh
+
+## Development & Contribution
+
+### Adding a New Dashboard
+
+1. **Create dashboard file**: `src/dashboards/my-dashboard.ts`
+   ```typescript
+   import { DashboardBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
+   import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
+   import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
+   import { victoriaMetricsDS } from "../shared/datasource.js";
+
+   export function makeMyDashboard() {
+     const dashboard = new DashboardBuilder("My Dashboard")
+       .uid("my-dashboard-uid")
+       .tags(["custom", "tag"])
+       .refresh("30s")
+       .time({ from: "now-24h", to: "now" })
+       .timezone("browser");
+
+     const query = new DataqueryBuilder()
+       .refId("A")
+       .expr('{__name__="sensor.my_metric_value"}')
+       .datasource(victoriaMetricsDS)
+       .legendFormat("My Metric");
+
+     const panel = new TimeseriesPanelBuilder()
+       .title("My Panel")
+       .datasource(victoriaMetricsDS)
+       .withTarget(query)
+       .gridPos({ x: 0, y: 0, w: 12, h: 8 });
+
+     dashboard.withPanel(panel);
+     return dashboard.build();
+   }
+   ```
+
+2. **Register in build.ts**: Import and add to `main()`:
+   ```typescript
+   import { makeMyDashboard } from "./dashboards/my-dashboard.js";
+
+   export async function main() {
+     const dashboards = [
+       makeMyDashboard(),
+       makeAirQualityDashboard(),
+       makeEnergyMonitorDashboard(),
+       // ... other dashboards
+     ];
+     // ...
+   }
+   ```
+
+3. **Build and validate**:
+   ```bash
+   pnpm build
+   pnpm fmt
+   pnpm lint
+   ```
+
+4. **Update docs**: Add to `AGENTS.md` and this README.md
+
+5. **Push and deploy**: GitHub Actions handles CI/CD automatically
+
+### Code Style & Standards
+
+- **Formatting**: Biome (100-char line width, 2-space indent)
+- **Imports**: Use `.js` extensions in ESM imports
+- **Panel Types**: Always alias `PanelBuilder` to specify type (e.g., `TimeseriesPanelBuilder`)
+- **UIDs**: Use unique, kebab-case identifiers
+- **Units**: Grafana standard units (celsius, percent, ppm, kwatth, watt, none)
+
+### Testing & Validation
+
+Before committing:
+```bash
+# Format code
+pnpm fmt
+
+# Lint for errors
+pnpm lint
+
+# Build and verify JSON
+pnpm build
+jq '.dashboard.panels | length' dist/*.json  # Count panels
+```
+
+### Debugging
+
+- **Check build output**: `cat dist/*.json | jq .`
+- **Verify datasource**: Ensure VictoriaMetrics is running and accessible
+- **Test queries**: Use `curl` or Grafana's Query Inspector
+- **GitHub Actions logs**: Check workflow runs in repository settings
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `pnpm: command not found` | Install pnpm: `npm install -g pnpm` |
+| Build fails with import errors | Ensure `.js` extensions in imports |
+| Null-values not connected | Verify `build.ts` has `addConnectNullValuesToTimeseries` enabled |
+| Metrics not appearing | Check VictoriaMetrics datasource UID matches |
+| Tailscale connection fails | Verify OAuth credentials in GitHub secrets |
+| Grafana upload fails | Check `GRAFANA_URL` and `GRAFANA_TOKEN` in `.env` or GitHub secrets |
+
 ## Reference
 
 - [Grafana Foundation SDK Documentation](https://grafana.github.io/grafana-foundation-sdk/next+cog-v0.0.x/typescript/Installing/)
 - [Grafana Dashboard JSON Model](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/)
+- [PromQL Query Language](https://prometheus.io/docs/prometheus/latest/querying/basics/)
+- [Home Assistant Documentation](https://www.home-assistant.io/docs/)
 
-## Next Steps
+## License
 
-The framework is ready! To complete the dashboards:
-
-1. Create `src/dashboards/air-quality-dashboard.ts`
-2. Create `src/dashboards/energy-monitor-dashboard.ts`
-3. Implement each panel using the patterns shown in `build.ts`
-4. Import the dashboard functions in `build.ts`
-5. Run `npm run build` to generate the JSON files
-
-For help with implementing specific panels, refer to the examples in this README and the original JSON files.
->>>>>>> c64b023 (Initial commit: Grafana dashboards with TypeScript, Biome, and GitHub Actions CI/CD)
+MIT - Feel free to use and modify for your own setup.

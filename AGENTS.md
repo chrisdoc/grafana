@@ -1,115 +1,161 @@
-# Grafana Agent Context
+# Copilot Instructions for Grafana Dashboard Project
 
-## Quick Summary
-- **VictoriaMetrics/Prometheus** (DEFAULT): 2,708 Home Assistant metrics from VictoriaMetrics
-- **InfluxDB**: homeassistant and proxmox buckets available
-- **Update Frequency**: Real-time to 5-minute intervals
-- **Last Updated**: November 9, 2025
+## Project Overview
 
-## Datasources
+This is a **TypeScript-based Grafana dashboard generation system** that:
+- Builds dashboards programmatically using `@grafana/grafana-foundation-sdk`
+- Compiles TypeScript dashboard definitions to JSON
+- Auto-deploys to Grafana via GitHub Actions + Tailscale secure networking
+- Manages Home Assistant metrics (2,708 total) from VictoriaMetrics datasource
 
-| Datasource | Type | URL | UID |
-|-----------|------|-----|-----|
-| **vic** (PRIMARY) | VictoriaMetrics | `http://192.168.86.213:8428/` | `df3igl5nh1f5sa` |
-| homeassistant | InfluxDB (Flux) | `http://**:8086` | `ee572hhislhj4a` |
-| proxmox | InfluxDB (Flux) | `http://**:8086` | `edrq0qc5e0c8wb` |
+## Architecture
 
-### VictoriaMetrics Labels & Patterns
-- **Labels**: `__name__`, `db`, `domain`, `entity_id`, `friendly_name`, `unit_of_measurement`
-- **Domains**: binary_sensor, climate, input_select, light, number, sensor, switch, weather
-- **Pattern**: `{domain}.{entity_id}_{attribute}` (e.g., `sensor.bathroom_temperature_value`)
-
----
-
-## Metric Inventory (2,708 Total)
-
-### By Domain
-| Domain | Count | Key Metrics |
-|--------|-------|------------|
-| device_tracker | 1,459 | Location, presence, connectivity |
-| sensor | 696 | Power, energy, temperature, humidity, battery |
-| binary_sensor | 221 | Motion, occupancy, contact sensors |
-| light | 207 | Brightness, color, effects (11 entities) |
-| climate | 42 | Temperature, humidity, HVAC state, presets |
-| switch | 36 | On/off controls (AdGuard, child locks) |
-| weather | 28 | Temperature, wind, precipitation, UV |
-| person | 13 | User presence aggregation |
-| number | 5 | Numeric inputs |
-| input_select | 1 | Selection input |
-
-### Key Entities
-
-**Air Quality** (sensor.i_9psl):
-- CO₂, PM0.3/PM1/PM2.5/PM10, NOx, VOC indices, temperature, humidity
-
-**Climate Control** (4 zones):
-- bathroom, bedroom, living_room, hot_water
-- Metrics: temperature, target_temperature, humidity, hvac_action, preset_mode, window_state
-
-**Power & Energy** (P1 Meter + Devices):
-- Real-time power per phase, daily/monthly import, tariff tracking
-- Device-level: dining lights, sofa, RGBW bulbs
-
-**Lighting** (11 entities):
-- Rooms: bed, dining (3x), floor, living, monitor, sofa (3x), standing
-- Attributes: state, brightness, color, hs, rgb, rgbw, xy, effect
-
-**Location & Presence**:
-- person.chrisdoc, person.meghan (aggregated)
-- device_tracker.chrisphone, device_tracker.meg_2
-- 1,459 network device trackers with connectivity data
-
-**Smart Home Devices**:
-- AdGuard Home (filtering, blocking stats)
-- Air Purifier (filter lifetime, PM2.5)
-- Cameras (motion, audio, recording)
-- Printer (status, state reason)
-
----
-
-## Query Examples
-
-```promql
-# Current CO₂ level
-sensor.i_9psl_carbon_dioxide_value
-
-# PM2.5 over last hour
-sensor.i_9psl_pm2_5_value[1h]
-
-# Average temperature (5min windows)
-avg_over_time(sensor.i_9psl_temperature_value[5m])
-
-# Filter by domain
-{domain="sensor"}
-
-# Filter by entity_id
-{entity_id="bathroom_temperature"}
-
-# Group by domain
-count by (domain) ({__name__=~".+"})
+```
+Datasource (VictoriaMetrics/Prometheus)
+    ↓
+TypeScript Dashboard Builders (src/dashboards/*.ts)
+    ↓
+build.ts → compiles to JSON (dist/*.json)
+    ↓
+GitHub Actions Workflow
+    ↓
+Tailscale VPN → Upload via ./upload.sh → Grafana API
 ```
 
----
+### Key Files
+- `src/dashboards/*.ts` - Individual dashboard implementations (Air Quality, Energy, Thermostat, Location Tracking)
+- `src/shared/datasource.ts` - VictoriaMetrics datasource config (UID: `df3igl5nh1f5sa`)
+- `build.ts` - Build orchestrator (uses `addConnectNullValuesToTimeseries` to bridge 10-minute null gaps)
+- `.github/workflows/deploy.yml` - CI/CD pipeline (pnpm 10, Biome 2.3.4, Tailscale auth)
+- `upload.sh` - Grafana API deployment script
 
-## Current Dashboards
+## Dashboard Pattern (Crucial)
 
-| Dashboard | Panels | Key Features |
-|-----------|--------|--------------|
-| Air Quality | 26 | PM2.5, PM10, CO₂, NOx, VOC, humidity, temp |
-| Energy Monitor | 36 | Real-time & historical power, tariffs, cost |
-| Thermostat | 18 | Room temps, humidity, HVAC state, presets |
-| Location Tracking | 10 | GPS coords, home/away state, history |
+Every dashboard follows this structure:
 
----
+```typescript
+import { DashboardBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
+import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
+import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
+import { victoriaMetricsDS } from "../shared/datasource.js";
 
-## Recommended New Dashboards
+export function makeThermostatDashboard() {
+  const dashboard = new DashboardBuilder("Thermostat Overview")
+    .uid("thermostats-overview")
+    .tags(["thermostat", "climate", "vic"])
+    .refresh("30s")
+    .time({ from: "now-24h", to: "now" })
+    .timezone("browser");
 
-### Priority 1 (High Value)
-1. **Power & Energy Dashboard** ⚡ - Phase breakdown, daily trends, cost analysis
-2. **Lighting Control Dashboard** 💡 - Status, brightness, color, power per light
-3. **Weather Dashboard** 🌤️ - Conditions, temperature, wind, precipitation, UV
+  // Row grouping (optional but recommended for organization)
+  const row = new RowBuilder("Zone 1: Living Room");
+  dashboard.withRow(row);
 
-### Priority 2 (Good Data)
-4. **Home Occupancy Dashboard** 👥 - Presence, motion, network device status
-5. **Security & Access Dashboard** 🔒 - AdGuard stats, camera alerts, network health
-6. **Mobile & Wearables Dashboard** 📱 - Battery levels, activity, location
+  // Query (PromQL)
+  const tempQuery = new DataqueryBuilder()
+    .refId("A")
+    .expr('{__name__="sensor.living_room_temperature_value"}')
+    .datasource(victoriaMetricsDS)
+    .legendFormat("Temperature");
+
+  // Panel with query
+  const panel = new TimeseriesPanelBuilder()
+    .title("Temperature")
+    .datasource(victoriaMetricsDS)
+    .withTarget(tempQuery)
+    .gridPos({ x: 0, y: 1, w: 12, h: 8 })
+    .unit("celsius");
+
+  dashboard.withPanel(panel);
+  return dashboard.build();
+}
+```
+
+### Essential Patterns
+
+**Metric Naming**: Home Assistant metrics follow `{domain}.{entity_id}_{attribute}`:
+- `sensor.bathroom_temperature_value` (domain=sensor, entity_id=bathroom_temperature, attribute=value)
+- Domain values: sensor, climate, light, binary_sensor, device_tracker, switch, weather, person, etc.
+
+**Null Value Handling**: `build.ts` auto-adds `connect: { threshold: 600000 }` to ALL timeseries panels (10-minute gap threshold). No manual configuration needed.
+
+**Import Pattern**: Always use named imports from Foundation SDK and import `victoriaMetricsDS` for datasource:
+```typescript
+import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
+import { victoriaMetricsDS } from "../shared/datasource.js";
+```
+
+**Units**: Use Grafana standard units (e.g., `celsius`, `percent`, `ppm`, `kwatth`, `watt`, `none`)
+
+## Developer Workflow
+
+```bash
+pnpm run build          # Compile TypeScript → dist/*.json (always run this first)
+pnpm run fmt            # Format with Biome (100-char line width, 2-space indent)
+pnpm run lint           # Lint with Biome
+pnpm run deploy         # build + upload.sh (requires .env with GRAFANA_URL, GRAFANA_TOKEN)
+```
+
+### Build Output
+- **Location**: `dist/` directory
+- **Format**: Each file wrapped as `{ dashboard: {...}, overwrite: true }`
+- **Validation**: Verify with `jq '.dashboard.panels | length' dist/*.json`
+
+### Git/GitHub Workflow
+1. **Local development**: Make changes to `src/dashboards/*.ts`
+2. **Validate**: `npm run build && npm run fmt && npm run lint`
+3. **Push**: Automatically triggers GitHub Actions
+4. **GitHub Actions**:
+   - Installs pnpm 10 (respect `pnpm-lock.yaml`)
+   - Runs format/lint checks (Biome 2.3.4, schema 2.3.4)
+   - Builds dashboards
+   - Connects via Tailscale (tag:ci) with OAuth credentials
+   - Deploys via `upload.sh`
+
+## Common Gotchas
+
+1. **Import paths**: Always use `.js` extension in ESM imports (`from "../shared/datasource.js"`)
+2. **Dashboard UIDs**: Must be unique; use kebab-case (e.g., `air-quality-i_9psl`, `thermostats-overview`)
+3. **Panel import aliasing**: Foundation SDK exports `PanelBuilder` for each type; always alias:
+   ```typescript
+   import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
+   ```
+4. **Null metrics**: If a metric has gaps, add it to dashboard – `build.ts` handles null connection automatically
+5. **Colors**: Use Grafana color names (e.g., `green`, `red`, `orange`); avoid custom colors like `semi-dark-grey`
+
+## Metric Inventory
+
+**Total**: 2,708 metrics across Home Assistant domains
+
+**Key Domains**:
+- **sensor** (696): Power, energy, temperature, humidity, battery
+- **device_tracker** (1,459): Location, presence, connectivity
+- **binary_sensor** (221): Motion, occupancy, contacts
+- **climate** (42): HVAC, temp control (bathroom, bedroom, living_room, hot_water)
+- **light** (207): 11 entities with brightness, color, effects
+
+**Query reference**: See `AGENTS.md` for metric patterns and `MAINTENANCE.md` for keeping docs updated
+
+## When Adding New Dashboards
+
+1. Create `src/dashboards/my-dashboard.ts` following the pattern above
+2. Export a `makeMyDashboard()` function returning `dashboard.build()`
+3. Import in `build.ts` and add to `main()` with appropriate panel count
+4. Run `npm run build` to validate
+5. Update `AGENTS.md` "Current Dashboards" table
+6. Commit & push (GitHub Actions handles the rest)
+
+## Maintenance & CI/CD
+
+- **Dependabot**: Automatically creates PRs for npm and GitHub Actions updates (weekly)
+- **GitHub Actions**: Runs on push to main + PRs (biome format/lint → build → Tailscale → upload)
+- **Tailscale**: OAuth-based secure tunnel (requires `TAILSCALE_OAUTH_CLIENT_ID`, `TAILSCALE_OAUTH_SECRET` secrets)
+- **Upload script**: `./upload.sh` handles authentication via `GRAFANA_TOKEN` and `GRAFANA_URL` (from GitHub secrets or .env locally)
+
+## References
+
+- [Grafana Foundation SDK Docs](https://grafana.github.io/grafana-foundation-sdk/next+cog-v0.0.x/typescript/)
+- [VictoriaMetrics PromQL](http://192.168.86.213:8428/)
+- `AGENTS.md` - Datasource & metric reference
+- `MAINTENANCE.md` - Docs update guidelines
+- `GITHUB_ACTIONS_SETUP.md` - CI/CD troubleshooting
