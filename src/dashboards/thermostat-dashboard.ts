@@ -3,6 +3,7 @@ import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundat
 import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sdk/stat";
 import { RowBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
+import { VisibilityMode, BigValueGraphMode } from "@grafana/grafana-foundation-sdk/common";
 import { victoriaMetricsDS } from "../shared/datasource.js";
 
 interface ThermostatConfig {
@@ -33,8 +34,8 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .unit("celsius")
     .lineWidth(2)
     .fillOpacity(10)
-    .spanNulls(600000)
-    .showPoints("never" as const);
+    .showPoints(VisibilityMode.Never)
+    .spanNulls(600000);
 
   dashboard.withPanel(currentTempPanel);
 
@@ -50,7 +51,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .withTarget(targetTempQuery)
     .gridPos({ x: 12, y: yOffset + 1, w: 6, h: 8 })
     .unit("celsius")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(targetTempStat);
 
@@ -65,7 +66,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .datasource(victoriaMetricsDS)
     .withTarget(hvacActionQuery)
     .gridPos({ x: 18, y: yOffset + 1, w: 6, h: 8 })
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(hvacActionStat);
 
@@ -86,8 +87,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .max(100)
     .lineWidth(2)
     .fillOpacity(10)
-    .spanNulls(600000)
-    .showPoints("never" as const);
+    .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(humidityPanel);
 
@@ -102,7 +102,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .datasource(victoriaMetricsDS)
     .withTarget(presetModeQuery)
     .gridPos({ x: 12, y: yOffset + 9, w: 6, h: 8 })
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(presetModeStat);
 
@@ -117,7 +117,7 @@ function createThermostatRow(dashboard: DashboardBuilder, config: ThermostatConf
     .datasource(victoriaMetricsDS)
     .withTarget(stateQuery)
     .gridPos({ x: 18, y: yOffset + 9, w: 6, h: 8 })
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(stateStat);
 }

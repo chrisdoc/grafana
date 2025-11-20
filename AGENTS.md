@@ -8,6 +8,17 @@ This is a **TypeScript-based Grafana dashboard generation system** that:
 - Auto-deploys to Grafana via GitHub Actions + Tailscale secure networking
 - Manages Home Assistant metrics (2,708 total) from VictoriaMetrics datasource
 
+## Tech Stack
+
+- **Language**: TypeScript 5.9
+- **Runtime**: Node.js (>=18.17)
+- **Package Manager**: pnpm 10
+- **SDK**: Grafana Foundation SDK
+- **Linter/Formatter**: Biome 2.3
+- **Build**: tsx
+- **CI/CD**: GitHub Actions
+- **Infrastructure**: Tailscale
+
 ## Architecture
 
 ```

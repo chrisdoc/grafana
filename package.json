@@ -5,16 +5,20 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=18.17"
+    "node": ">=18.17",
+    "pnpm": ">=10",
+    "npm": "please-use-pnpm"
   },
+  "packageManager": "pnpm@10.0.0",
   "scripts": {
     "build": "tsx build.ts",
-    "generate": "npm run build",
+    "generate": "pnpm run build",
     "upload": "./upload.sh",
-    "deploy": "npm run build && npm run upload",
+    "deploy": "pnpm run build && pnpm run upload",
     "clean": "rm -rf dist output build",
     "fmt": "biome format --write .",
-    "lint": "biome lint --write ."
+    "lint": "biome lint --write .",
+    "preinstall": "npx only-allow pnpm"
   },
   "keywords": [
     "grafana",

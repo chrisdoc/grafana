@@ -5,7 +5,7 @@ import { PanelBuilder as GeoMapPanelBuilder } from "@grafana/grafana-foundation-
 import { RowBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
 import { victoriaMetricsDS } from "../shared/datasource.js";
-import { VisibilityMode } from "@grafana/grafana-foundation-sdk/common";
+import { VisibilityMode, BigValueGraphMode } from "@grafana/grafana-foundation-sdk/common";
 
 export function makeLocationTrackingDashboard() {
   const dashboard = new DashboardBuilder("Location Tracking")
@@ -46,7 +46,7 @@ export function makeLocationTrackingDashboard() {
         },
       },
     ])
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophStateStat);
 
@@ -77,7 +77,7 @@ export function makeLocationTrackingDashboard() {
         },
       },
     ])
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(megStateStat);
 
@@ -93,7 +93,7 @@ export function makeLocationTrackingDashboard() {
     .withTarget(christophBatteryQuery)
     .gridPos({ x: 12, y: 1, w: 6, h: 4 })
     .unit("percent")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophBatteryStat);
 
@@ -113,7 +113,7 @@ export function makeLocationTrackingDashboard() {
     .withTarget(christophLatQuery)
     .gridPos({ x: 0, y: 19, w: 6, h: 4 })
     .unit("degrees")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophLatStat);
 
@@ -129,7 +129,7 @@ export function makeLocationTrackingDashboard() {
     .withTarget(christophLonQuery)
     .gridPos({ x: 6, y: 19, w: 6, h: 4 })
     .unit("degrees")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophLonStat);
 
@@ -145,7 +145,7 @@ export function makeLocationTrackingDashboard() {
     .withTarget(christophSpeedQuery)
     .gridPos({ x: 12, y: 19, w: 6, h: 4 })
     .unit("mps")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophSpeedStat);
 
@@ -161,7 +161,7 @@ export function makeLocationTrackingDashboard() {
     .withTarget(christophAccuracyQuery)
     .gridPos({ x: 18, y: 19, w: 6, h: 4 })
     .unit("meters")
-    .graphMode("none" as const);
+    .graphMode(BigValueGraphMode.None);
 
   dashboard.withPanel(christophAccuracyStat);
 
@@ -205,7 +205,6 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 0, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
-    .spanNulls(600000)
     .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(christophHistoryPanel);
@@ -224,7 +223,6 @@ export function makeLocationTrackingDashboard() {
     .gridPos({ x: 12, y: 33, w: 12, h: 8 })
     .lineWidth(2)
     .fillOpacity(20)
-    .spanNulls(600000)
     .showPoints(VisibilityMode.Never);
 
   dashboard.withPanel(megHistoryPanel);

@@ -1,12 +1,14 @@
 import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
 import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sdk/stat";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
+import { VisibilityMode, BigValueGraphMode } from "@grafana/grafana-foundation-sdk/common";
 import { victoriaMetricsDS } from "./datasource.js";
 
 interface PanelConfig {
   title: string;
   metric: string;
   unit: string;
+  statUnit?: string;
   yOffset: number;
   min?: number;
   max?: number;
@@ -23,7 +25,7 @@ interface PanelConfig {
  * - Consistent formatting across all dashboards
  */
 export function createMetricPanels(config: PanelConfig) {
-  const { title, metric, unit, yOffset, min, max, includeOverlay = true } = config;
+  const { title, metric, unit, statUnit, yOffset, min, max, includeOverlay = true } = config;
 
   const panels = [];
 
@@ -53,8 +55,8 @@ export function createMetricPanels(config: PanelConfig) {
     .unit(unit)
     .lineWidth(2)
     .fillOpacity(10)
-    .spanNulls(600000)
-    .showPoints("never");
+    .showPoints(VisibilityMode.Never)
+    .spanNulls(600000);
 
   // Add targets
   for (const target of timeseriesTargets) {
@@ -77,9 +79,6 @@ export function createMetricPanels(config: PanelConfig) {
     ]);
   }
 
-  // Ensure spanNulls is set in fieldConfig
-  timeseriesPanel.spanNulls(600000);
-
   panels.push(timeseriesPanel);
 
   // Build stat panel
@@ -93,8 +92,8 @@ export function createMetricPanels(config: PanelConfig) {
     .datasource(victoriaMetricsDS)
     .withTarget(statQuery)
     .gridPos({ x: 18, y: yOffset, w: 6, h: 8 })
-    .unit(unit)
-    .graphMode("area");
+    .unit(statUnit || unit)
+    .graphMode(BigValueGraphMode.Area);
 
   panels.push(statPanel);
 

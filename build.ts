@@ -25,21 +25,29 @@ function wrapDashboard(model: unknown) {
  */
 function addConnectNullValuesToTimeseries(dashboard: Record<string, unknown>) {
   const typedDashboard = dashboard as {
-    panels?: Array<{ type: string; options?: Record<string, unknown> }>;
+    panels?: Array<{
+      type: string;
+      fieldConfig?: {
+        defaults?: {
+          custom?: {
+            spanNulls?: number | boolean;
+          };
+        };
+      };
+    }>;
   };
 
   if (!typedDashboard.panels) return;
 
   for (const panel of typedDashboard.panels) {
     if (panel.type === "timeseries") {
-      // Initialize options if not present
-      if (!panel.options) {
-        panel.options = {};
-      }
-      // Add connect configuration
-      panel.options.connect = {
-        threshold: 600000, // 10 minutes in milliseconds
-      };
+      // Initialize fieldConfig structure if not present
+      if (!panel.fieldConfig) panel.fieldConfig = {};
+      if (!panel.fieldConfig.defaults) panel.fieldConfig.defaults = {};
+      if (!panel.fieldConfig.defaults.custom) panel.fieldConfig.defaults.custom = {};
+
+      // Add spanNulls configuration (10 minutes in milliseconds)
+      panel.fieldConfig.defaults.custom.spanNulls = 600000;
     }
   }
 }
