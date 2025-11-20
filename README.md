@@ -23,7 +23,8 @@ grafana/
 │   │   ├── thermostat-dashboard.ts
 │   │   └── location-tracking-dashboard.ts
 │   └── shared/
-│       └── datasource.ts        # VictoriaMetrics datasource config (UID: df3igl5nh1f5sa)
+│       ├── datasource.ts        # VictoriaMetrics datasource config (UID: df3igl5nh1f5sa)
+│       └── panel-builder.ts     # Shared panel factory (DRY implementation)
 ├── .github/
 │   ├── workflows/
 │   │   └── deploy.yml           # CI/CD pipeline (build → lint → Tailscale → deploy)
@@ -83,6 +84,7 @@ Tailscale VPN → Grafana API Upload
 - **Datasource**: VictoriaMetrics (UID: `df3igl5nh1f5sa`) via Prometheus queries
 - **Build Process**: `build.ts` compiles TypeScript to JSON with automatic null-value bridging
 - **Deployment**: `upload.sh` + GitHub Actions with Tailscale secure networking
+- **Shared Builder**: `src/shared/panel-builder.ts` provides a unified `createMetricPanels` function for consistent layout and styling
 
 ## Dashboards (4 Complete, 90 Panels)
 
@@ -118,6 +120,7 @@ import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundat
 import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sdk/stat";
 import { RowPanelBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
+import { createMetricPanels } from "../shared/panel-builder.js";
 ```
 
 ### Creating a Dashboard
@@ -137,7 +140,26 @@ const row = new RowPanelBuilder("Row Title");
 dashboard.withRow(row);
 ```
 
-### Adding a Timeseries Panel with Queries
+### Using the Shared Panel Builder (Recommended)
+
+The `createMetricPanels` helper generates a standard 2-panel layout (Timeseries + Stat) with consistent styling, "Previous 24h" overlay, and null-value handling.
+
+```typescript
+const panels = createMetricPanels({
+  title: "Living Room Temperature",
+  metric: "sensor.living_room_temperature_value",
+  unit: "celsius",
+  yOffset: 0,
+  min: 15,
+  max: 30
+});
+
+for (const panel of panels) {
+  dashboard.withPanel(panel);
+}
+```
+
+### Manual Panel Creation (Advanced)
 
 ```typescript
 const query1 = new DataqueryBuilder()
@@ -359,11 +381,11 @@ Use the upload script to automatically push dashboards to Grafana:
 
 ```bash
 # Build and upload in one command
-npm run deploy
+pnpm run deploy
 
 # Or separately:
-npm run build
-npm run upload
+pnpm run build
+pnpm run upload
 ```
 
 The script will:
