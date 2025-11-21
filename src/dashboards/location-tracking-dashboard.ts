@@ -1,171 +1,114 @@
-import { DashboardBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
-import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
-import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sdk/stat";
-import { PanelBuilder as GeoMapPanelBuilder } from "@grafana/grafana-foundation-sdk/geomap";
 import { RowBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
+import { PanelBuilder as GeoMapPanelBuilder } from "@grafana/grafana-foundation-sdk/geomap";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
 import { victoriaMetricsDS } from "../shared/datasource.js";
 import { VisibilityMode, BigValueGraphMode } from "@grafana/grafana-foundation-sdk/common";
+import { createStatPanel, createTimeseriesPanel } from "../shared/panel-builder.js";
+import { createDashboard } from "../shared/dashboard-factory.js";
+
+// --- Configuration & Types ---
+
+interface PersonConfig {
+  name: string;
+  id: string; // e.g. "chrisphone" or "meg_2"
+  label: string; // e.g. "Chris" or "Meg"
+}
+
+const PEOPLE: PersonConfig[] = [
+  { name: "Chris", id: "chrisphone", label: "Chris" },
+  { name: "Meg", id: "meg_2", label: "Meg" },
+];
+
+// --- Dashboard Generator ---
 
 export function makeLocationTrackingDashboard() {
-  const dashboard = new DashboardBuilder("Location Tracking")
-    .uid("location-tracking")
-    .tags(["location", "tracking", "device-tracker", "vic"])
-    .refresh("30s")
-    .time({ from: "now-7d", to: "now" })
-    .timezone("browser");
+  const dashboard = createDashboard({
+    title: "Location Tracking",
+    uid: "location-tracking",
+    tags: ["location", "tracking", "device-tracker"],
+    from: "now-7d",
+    to: "now",
+  });
 
-  // Row: Location Status
-  const rowStatus = new RowBuilder("Current Location Status");
-  dashboard.withRow(rowStatus);
+  let currentY = 0;
 
-  // Christoph Current State
-  const christophStateQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr('{__name__="device_tracker.chrisphone_value"}')
-    .datasource(victoriaMetricsDS);
+  // 1. Location Status Row
+  dashboard.withRow(new RowBuilder("Current Location Status"));
+  currentY++;
 
-  const christophStateStat = new StatPanelBuilder()
-    .title("Chris - Home Status")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophStateQuery)
-    .gridPos({ x: 0, y: 1, w: 6, h: 4 })
-    .unit("none")
-    .mappings([
-      {
-        type: "value" as const,
-        options: {
-          "1": {
-            text: "Home",
-            color: "green",
-          },
-          "0": {
-            text: "Away",
-            color: "red",
+  PEOPLE.forEach((person, index) => {
+    // Home Status Stat
+    const stateStat = createStatPanel({
+      title: `${person.label} - Home Status`,
+      metric: `{__name__="device_tracker.${person.id}_value"}`,
+      x: index * 6,
+      y: currentY,
+      w: 6,
+      h: 4,
+      unit: "none",
+      graphMode: BigValueGraphMode.None,
+      mappings: [
+        {
+          // biome-ignore lint/suspicious/noExplicitAny: MappingType enum is not exported
+          type: "value" as any,
+          options: {
+            "1": { text: "Home", color: "green" },
+            "0": { text: "Away", color: "red" },
           },
         },
-      },
-    ])
-    .graphMode(BigValueGraphMode.None);
+      ],
+    });
 
-  dashboard.withPanel(christophStateStat);
+    dashboard.withPanel(stateStat);
+  });
 
-  // Meg Current State
-  const megStateQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr('{__name__="device_tracker.meg_2_value"}')
-    .datasource(victoriaMetricsDS);
-
-  const megStateStat = new StatPanelBuilder()
-    .title("Meg - Home Status")
-    .datasource(victoriaMetricsDS)
-    .withTarget(megStateQuery)
-    .gridPos({ x: 6, y: 1, w: 6, h: 4 })
-    .unit("none")
-    .mappings([
-      {
-        type: "value" as const,
-        options: {
-          "1": {
-            text: "Home",
-            color: "green",
-          },
-          "0": {
-            text: "Away",
-            color: "red",
-          },
-        },
-      },
-    ])
-    .graphMode(BigValueGraphMode.None);
-
-  dashboard.withPanel(megStateStat);
-
-  // Christoph Battery
-  const christophBatteryQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr('{__name__="device_tracker.chrisphone_battery_level"}')
-    .datasource(victoriaMetricsDS);
-
-  const christophBatteryStat = new StatPanelBuilder()
-    .title("Chris - Phone Battery")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophBatteryQuery)
-    .gridPos({ x: 12, y: 1, w: 6, h: 4 })
-    .unit("percent")
-    .graphMode(BigValueGraphMode.None);
+  // Chris Battery (Specific)
+  const christophBatteryStat = createStatPanel({
+    title: "Chris - Phone Battery",
+    metric: '{__name__="device_tracker.chrisphone_battery_level"}',
+    x: 12,
+    y: currentY,
+    w: 6,
+    h: 4,
+    unit: "percent",
+    graphMode: BigValueGraphMode.None,
+  });
 
   dashboard.withPanel(christophBatteryStat);
+  currentY += 4;
 
-  // Row: GPS Coordinates
-  const rowMap = new RowBuilder("GPS Coordinates");
-  dashboard.withRow(rowMap);
+  // 2. GPS Coordinates Row (Chris Only)
+  dashboard.withRow(new RowBuilder("GPS Coordinates"));
+  currentY++;
 
-  // Chris Latitude
-  const christophLatQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr("device_tracker.chrisphone_latitude")
-    .datasource(victoriaMetricsDS);
+  const gpsMetrics = [
+    { title: "Chris - Latitude", expr: "device_tracker.chrisphone_latitude", unit: "degrees" },
+    { title: "Chris - Longitude", expr: "device_tracker.chrisphone_longitude", unit: "degrees" },
+    { title: "Chris - Speed", expr: "device_tracker.chrisphone_speed", unit: "mps" },
+    {
+      title: "Chris - GPS Accuracy",
+      expr: "device_tracker.chrisphone_gps_accuracy",
+      unit: "meters",
+    },
+  ];
 
-  const christophLatStat = new StatPanelBuilder()
-    .title("Chris - Latitude")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophLatQuery)
-    .gridPos({ x: 0, y: 19, w: 6, h: 4 })
-    .unit("degrees")
-    .graphMode(BigValueGraphMode.None);
+  gpsMetrics.forEach((metric, index) => {
+    const panel = createStatPanel({
+      title: metric.title,
+      metric: metric.expr,
+      x: index * 6,
+      y: currentY,
+      w: 6,
+      h: 4,
+      unit: metric.unit,
+      graphMode: BigValueGraphMode.None,
+    });
 
-  dashboard.withPanel(christophLatStat);
+    dashboard.withPanel(panel);
+  });
+  currentY += 4;
 
-  // Chris Longitude
-  const christophLonQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr("device_tracker.chrisphone_longitude")
-    .datasource(victoriaMetricsDS);
-
-  const christophLonStat = new StatPanelBuilder()
-    .title("Chris - Longitude")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophLonQuery)
-    .gridPos({ x: 6, y: 19, w: 6, h: 4 })
-    .unit("degrees")
-    .graphMode(BigValueGraphMode.None);
-
-  dashboard.withPanel(christophLonStat);
-
-  // Chris Speed
-  const christophSpeedQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr("device_tracker.chrisphone_speed")
-    .datasource(victoriaMetricsDS);
-
-  const christophSpeedStat = new StatPanelBuilder()
-    .title("Chris - Speed")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophSpeedQuery)
-    .gridPos({ x: 12, y: 19, w: 6, h: 4 })
-    .unit("mps")
-    .graphMode(BigValueGraphMode.None);
-
-  dashboard.withPanel(christophSpeedStat);
-
-  // Chris Accuracy
-  const christophAccuracyQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr("device_tracker.chrisphone_gps_accuracy")
-    .datasource(victoriaMetricsDS);
-
-  const christophAccuracyStat = new StatPanelBuilder()
-    .title("Chris - GPS Accuracy")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophAccuracyQuery)
-    .gridPos({ x: 18, y: 19, w: 6, h: 4 })
-    .unit("meters")
-    .graphMode(BigValueGraphMode.None);
-
-  dashboard.withPanel(christophAccuracyStat);
-
-  // GPS Location Map - need both lat and lon queries
+  // GPS Map
   const mapLatQuery = new DataqueryBuilder()
     .refId("A")
     .expr("device_tracker.chrisphone_latitude")
@@ -181,51 +124,32 @@ export function makeLocationTrackingDashboard() {
     .datasource(victoriaMetricsDS)
     .withTarget(mapLatQuery)
     .withTarget(mapLonQuery)
-    .gridPos({ x: 0, y: 23, w: 24, h: 10 })
+    .gridPos({ x: 0, y: currentY, w: 24, h: 10 })
     .overrideByName("device_tracker.chrisphone_latitude", [{ id: "unit", value: "degrees" }])
     .overrideByName("device_tracker.chrisphone_longitude", [{ id: "unit", value: "degrees" }]);
 
   dashboard.withPanel(mapPanel);
+  currentY += 10;
 
-  // Row: State History
-  const rowHistory = new RowBuilder("State History - Last 7 Days");
-  dashboard.withRow(rowHistory);
+  // 3. State History Row
+  dashboard.withRow(new RowBuilder("State History - Last 7 Days"));
+  currentY++;
 
-  // Christoph State History Timeseries
-  const christophHistoryQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr('{__name__="device_tracker.chrisphone_value"}')
-    .datasource(victoriaMetricsDS)
-    .legendFormat("Chris");
+  PEOPLE.forEach((person, index) => {
+    const historyPanel = createTimeseriesPanel({
+      title: `${person.label} - Home/Away History`,
+      metric: `device_tracker.${person.id}_value`,
+      x: index * 12,
+      y: currentY,
+      w: 12,
+      h: 8,
+      fillOpacity: 20,
+      showPoints: VisibilityMode.Never,
+      legendFormat: person.label,
+    });
 
-  const christophHistoryPanel = new TimeseriesPanelBuilder()
-    .title("Chris - Home/Away History")
-    .datasource(victoriaMetricsDS)
-    .withTarget(christophHistoryQuery)
-    .gridPos({ x: 0, y: 33, w: 12, h: 8 })
-    .lineWidth(2)
-    .fillOpacity(20)
-    .showPoints(VisibilityMode.Never);
-
-  dashboard.withPanel(christophHistoryPanel);
-
-  // Meg State History Timeseries
-  const megHistoryQuery = new DataqueryBuilder()
-    .refId("A")
-    .expr('{__name__="device_tracker.meg_2_value"}')
-    .datasource(victoriaMetricsDS)
-    .legendFormat("Meg");
-
-  const megHistoryPanel = new TimeseriesPanelBuilder()
-    .title("Meg - Home/Away History")
-    .datasource(victoriaMetricsDS)
-    .withTarget(megHistoryQuery)
-    .gridPos({ x: 12, y: 33, w: 12, h: 8 })
-    .lineWidth(2)
-    .fillOpacity(20)
-    .showPoints(VisibilityMode.Never);
-
-  dashboard.withPanel(megHistoryPanel);
+    dashboard.withPanel(historyPanel);
+  });
 
   return dashboard.build();
 }
