@@ -5,6 +5,10 @@ import { makeAirQualityDashboard } from "./src/dashboards/air-quality-dashboard.
 import { makeEnergyMonitorDashboard } from "./src/dashboards/energy-monitor-dashboard.js";
 import { makeThermostatDashboard } from "./src/dashboards/thermostat-dashboard.js";
 import { makeLocationTrackingDashboard } from "./src/dashboards/location-tracking-dashboard.js";
+import { makeOpenWrtRouterDashboard } from "./src/dashboards/openwrt-router-dashboard.js";
+import { makeOttoSnooDashboard } from "./src/dashboards/otto-snoo-dashboard.js";
+import { makeProxmoxDashboard } from "./src/dashboards/proxmox-dashboard.js";
+import { makeVictoriaMetricsDashboard } from "./src/dashboards/victoriametrics-dashboard.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -82,13 +86,29 @@ async function main() {
   console.log("  - Generating Location Tracking dashboard (10 panels)...");
   writeDashboard("location-tracking-dashboard.json", makeLocationTrackingDashboard());
 
-  console.log("\n✓ Done! Generated 4 dashboards with 90 panels total.");
+  console.log("  - Generating OpenWrt Router dashboard (16 panels)...");
+  writeDashboard("openwrt-router-dashboard.json", makeOpenWrtRouterDashboard());
+
+  console.log("  - Generating Otto's SNOO Nights dashboard (1 panel)...");
+  writeDashboard("otto-snoo-dashboard.json", makeOttoSnooDashboard());
+
+  console.log("  - Generating Proxmox dashboard (16 panels)...");
+  writeDashboard("proxmox-dashboard.json", makeProxmoxDashboard());
+
+  console.log("  - Generating VictoriaMetrics dashboard...");
+  writeDashboard("victoriametrics-dashboard.json", makeVictoriaMetricsDashboard());
+
+  console.log("\n✓ Done! Generated dashboard JSON files, including Otto's SNOO Nights.");
   console.log("  - All timeseries panels configured to connect null values < 10 minutes apart");
   console.log("\nOutput:");
   console.log("  - dist/air-quality-dashboard.json");
   console.log("  - dist/energy-monitor-dashboard.json");
   console.log("  - dist/thermostat-dashboard.json");
   console.log("  - dist/location-tracking-dashboard.json");
+  console.log("  - dist/openwrt-router-dashboard.json");
+  console.log("  - dist/otto-snoo-dashboard.json");
+  console.log("  - dist/proxmox-dashboard.json");
+  console.log("  - dist/victoriametrics-dashboard.json");
 }
 
 main().catch(err => {
