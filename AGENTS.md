@@ -165,7 +165,6 @@ pnpm run deploy         # build + upload.sh (requires .env with GRAFANA_URL, GRA
 | Thermostats | `thermostats-overview` | 21 |
 | Location Tracking | `location-tracking` | 13 |
 | OpenWrt Router | `openwrt-router` | 28 |
-| Otto's SNOO Nights | `otto-snoo-nights` | 2 |
 | Proxmox | `proxmox` | 36 |
 | VictoriaMetrics | `victoriametrics` | 15 |
 | Hevy MCP observability | `hevy-mcp-tempo-vm-90d` | 22 |
