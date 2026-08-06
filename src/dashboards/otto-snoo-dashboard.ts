@@ -1,5 +1,9 @@
 import { RowBuilder } from "@grafana/grafana-foundation-sdk/dashboard";
-import { VisibilityMode, BigValueGraphMode, TableSortByFieldStateBuilder } from "@grafana/grafana-foundation-sdk/common";
+import {
+  VisibilityMode,
+  BigValueGraphMode,
+  TableSortByFieldStateBuilder,
+} from "@grafana/grafana-foundation-sdk/common";
 import { PanelBuilder as StateTimelinePanelBuilder } from "@grafana/grafana-foundation-sdk/statetimeline";
 import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sdk/stat";
 import { PanelBuilder as TablePanelBuilder } from "@grafana/grafana-foundation-sdk/table";
