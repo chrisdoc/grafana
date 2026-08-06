@@ -168,6 +168,7 @@ pnpm run deploy         # build + upload.sh (requires .env with GRAFANA_URL, GRA
 | Otto's SNOO Nights | `otto-snoo-nights` | 2 |
 | Proxmox | `proxmox` | 36 |
 | VictoriaMetrics | `victoriametrics` | 15 |
+| Hevy MCP observability | `hevy-mcp-tempo-vm-90d` | 22 |
 
 - Inventory: Keep `AGENTS.md` updated with a short inventory of dashboards (name, uid, panel count). Add new dashboards immediately after creating them.
 - Deployment: After making changes to any dashboard, always run a build and deploy the JSON to Grafana (e.g., `pnpm run deploy` or push to main to trigger CI/CD). Do not leave dashboard changes un-deployed.

@@ -9,6 +9,7 @@ import { makeOpenWrtRouterDashboard } from "./src/dashboards/openwrt-router-dash
 import { makeOttoSnooDashboard } from "./src/dashboards/otto-snoo-dashboard.js";
 import { makeProxmoxDashboard } from "./src/dashboards/proxmox-dashboard.js";
 import { makeVictoriaMetricsDashboard } from "./src/dashboards/victoriametrics-dashboard.js";
+import { makeHevyMcpDashboard } from "./src/dashboards/hevy-mcp-dashboard.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -97,6 +98,8 @@ async function main() {
 
   console.log("  - Generating VictoriaMetrics dashboard...");
   writeDashboard("victoriametrics-dashboard.json", makeVictoriaMetricsDashboard());
+  console.log("  - Generating Hevy MCP dashboard (22 panels)...");
+  writeDashboard("hevy-mcp-dashboard.json", makeHevyMcpDashboard());
 
   console.log("\n✓ Done! Generated dashboard JSON files, including Otto's SNOO Nights.");
   console.log("  - All timeseries panels configured to connect null values < 10 minutes apart");
@@ -109,6 +112,7 @@ async function main() {
   console.log("  - dist/otto-snoo-dashboard.json");
   console.log("  - dist/proxmox-dashboard.json");
   console.log("  - dist/victoriametrics-dashboard.json");
+  console.log("  - dist/hevy-mcp-dashboard.json");
 }
 
 main().catch(err => {
