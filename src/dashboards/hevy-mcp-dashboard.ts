@@ -49,7 +49,7 @@ export function makeHevyMcpDashboard() {
 
   const panel2 = new StatPanelBuilder()
     .id(2)
-    .title("Active traced hashes (24h, any span)")
+    .title("Active users (24h, tool/resource/prompt activity)")
     .datasource(victoriaMetricsDS)
     .gridPos({
       h: 4,
@@ -58,7 +58,7 @@ export function makeHevyMcpDashboard() {
       y: 1,
     })
     .description(
-      "Unique hashed users with any traced Hevy span in the last 24 hours. This intentionally differs from users who invoked an MCP tool."
+      "Unique hashed users with tool, resource, or prompt activity in the last 24 hours."
     );
   panel2.withTarget(
     prometheusTarget({
@@ -742,7 +742,7 @@ export function makeHevyMcpDashboard() {
 
   const panel21 = new StatPanelBuilder()
     .id(21)
-    .title("Active traced series (any span)")
+    .title("Active Hevy metric series")
     .datasource(victoriaMetricsDS)
     .gridPos({
       h: 6,
