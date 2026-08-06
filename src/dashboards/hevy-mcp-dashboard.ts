@@ -3,7 +3,7 @@ import { PanelBuilder as StatPanelBuilder } from "@grafana/grafana-foundation-sd
 import { PanelBuilder as TimeseriesPanelBuilder } from "@grafana/grafana-foundation-sdk/timeseries";
 import { PanelBuilder as TablePanelBuilder } from "@grafana/grafana-foundation-sdk/table";
 import { DataqueryBuilder } from "@grafana/grafana-foundation-sdk/prometheus";
-import { TempoQueryBuilder } from "@grafana/grafana-foundation-sdk/tempo";
+import { DataqueryBuilder as TempoDataqueryBuilder } from "@grafana/grafana-foundation-sdk/tempo";
 import { victoriaMetricsDS } from "../shared/datasource.js";
 
 const tempoDS = { type: "tempo", uid: "efs98nkvn6txcf" };
@@ -20,7 +20,7 @@ function prometheusTarget(target: any) {
 }
 
 function tempoTarget(target: any) {
-  return new TempoQueryBuilder()
+  return new TempoDataqueryBuilder()
     .refId(target.refId)
     .query(target.query)
     .queryType(target.queryType ?? "traceql")

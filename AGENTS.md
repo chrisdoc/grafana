@@ -167,6 +167,7 @@ pnpm run deploy         # build + upload.sh (requires .env with GRAFANA_URL, GRA
 | OpenWrt Router | `openwrt-router` | 28 |
 | Proxmox | `proxmox` | 36 |
 | VictoriaMetrics | `victoriametrics` | 15 |
+| Hermes MCP | `hermes-mcp-observability` | 15 |
 | Hevy MCP observability | `hevy-mcp-tempo-vm-90d` | 22 |
 
 - Inventory: Keep `AGENTS.md` updated with a short inventory of dashboards (name, uid, panel count). Add new dashboards immediately after creating them.

@@ -28,12 +28,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grafana/grafana-foundation-sdk": "0.0.12"
+    "@grafana/grafana-foundation-sdk": "0.0.18"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.15",
-    "@types/node": "^25.8.0",
-    "tsx": "^4.22.1",
-    "typescript": "^6.0.3"
+    "@biomejs/biome": "^2.5.7",
+    "@types/node": "^26.1.2",
+    "tsx": "^4.23.9",
+    "typescript": "^7.0.2"
   }
 }
