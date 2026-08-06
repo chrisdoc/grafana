@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 import { makeAirQualityDashboard } from "./src/dashboards/air-quality-dashboard.js";
 import { makeEnergyMonitorDashboard } from "./src/dashboards/energy-monitor-dashboard.js";
 import { makeHermesMcpDashboard } from "./src/dashboards/hermes-mcp-dashboard.js";
+import { makeHevyMcpDashboard } from "./src/dashboards/hevy-mcp-dashboard.js";
 import { makeLocationTrackingDashboard } from "./src/dashboards/location-tracking-dashboard.js";
 import { makeOpenWrtRouterDashboard } from "./src/dashboards/openwrt-router-dashboard.js";
-import { makeOttoSnooDashboard } from "./src/dashboards/otto-snoo-dashboard.js";
 import { makeProxmoxDashboard } from "./src/dashboards/proxmox-dashboard.js";
 import { makeThermostatDashboard } from "./src/dashboards/thermostat-dashboard.js";
 import { makeVictoriaMetricsDashboard } from "./src/dashboards/victoriametrics-dashboard.js";
@@ -90,9 +90,6 @@ async function main() {
   console.log("  - Generating OpenWrt Router dashboard (16 panels)...");
   writeDashboard("openwrt-router-dashboard.json", makeOpenWrtRouterDashboard());
 
-  console.log("  - Generating Otto's SNOO Nights dashboard (1 panel)...");
-  writeDashboard("otto-snoo-dashboard.json", makeOttoSnooDashboard());
-
   console.log("  - Generating Proxmox dashboard (16 panels)...");
   writeDashboard("proxmox-dashboard.json", makeProxmoxDashboard());
 
@@ -102,6 +99,9 @@ async function main() {
   console.log("  - Generating Hermes MCP dashboard (15 panels)...");
   writeDashboard("hermes-mcp-dashboard.json", makeHermesMcpDashboard());
 
+  console.log("  - Generating Hevy MCP dashboard (22 panels)...");
+  writeDashboard("hevy-mcp-dashboard.json", makeHevyMcpDashboard());
+
   console.log("\n✓ Done! Generated dashboard JSON files, including Otto's SNOO Nights.");
   console.log("  - All timeseries panels configured to connect null values < 10 minutes apart");
   console.log("\nOutput:");
@@ -110,10 +110,10 @@ async function main() {
   console.log("  - dist/thermostat-dashboard.json");
   console.log("  - dist/location-tracking-dashboard.json");
   console.log("  - dist/openwrt-router-dashboard.json");
-  console.log("  - dist/otto-snoo-dashboard.json");
   console.log("  - dist/proxmox-dashboard.json");
   console.log("  - dist/victoriametrics-dashboard.json");
   console.log("  - dist/hermes-mcp-dashboard.json");
+  console.log("  - dist/hevy-mcp-dashboard.json");
 }
 
 main().catch(err => {
